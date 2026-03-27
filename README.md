@@ -5,12 +5,22 @@
 
 ![Overview](docs/assets/overview.png)
 
-## Quick Start
+## Демо
+
+**[Открыть GitHub Pages →](https://kirillbaranov.github.io/frontend-platform-demo/)**
+
+GitHub Pages — статическая версия с mock-данными. Навигация, feature flags, DevTools, cross-module события работают. Данные зашиты — нет обращений к серверу.
+
+Для полноценной работы с Gateway BFF и данными из "Delphi" — локальный запуск:
 
 ```bash
+git clone https://github.com/KirillBaranov/frontend-platform-demo.git
+cd frontend-platform-demo
 pnpm install
 pnpm start        # shell (3000) + gateway (4000) → opens browser
 ```
+
+В локальном режиме Gateway поднимается на `:4000`, данные приходят через Delphi adapter с нормализацией, запросы видны в DevTools панели.
 
 ---
 
