@@ -1,0 +1,19 @@
+{
+  "name": "@platform/ui-kit",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.css",
+  "exports": {
+    ".": "./index.css",
+    "./tokens": "./tokens/index.css",
+    "./base": "./base/index.css",
+    "./components/*": "./components/*.css"
+  },
+  "scripts": {
+    "lint": "echo 'CSS-only package, no lint needed'",
+    "typecheck": "echo 'CSS-only package'",
+    "test": "echo 'CSS-only package'",
+    "clean": "echo 'nothing to clean'"
+  }
+}
