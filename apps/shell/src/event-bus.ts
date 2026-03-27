@@ -6,6 +6,9 @@
  *
  * The bus supports versioned events: a v1 consumer and a v2 consumer
  * can coexist. Each receives events matching its subscription type.
+ *
+ * Internal handler maps use `unknown` — type safety is enforced at the
+ * public API boundary (subscribe/publish are fully generic-typed).
  */
 
 import type {
@@ -19,12 +22,12 @@ import type {
 } from '@platform/contracts';
 import type { DevTools } from './devtools.js';
 
-type EventHandler<T extends PlatformEventType> = (event: EventOf<T>) => void;
-type CommandHandler<T extends PlatformCommandType> = (command: CommandOf<T>) => void;
+type UntypedEventHandler = (event: unknown) => void;
+type UntypedCommandHandler = (command: unknown) => void;
 
 export class EventBus implements ModuleEventBus {
-  private eventHandlers = new Map<string, Set<EventHandler<any>>>();
-  private commandHandlers = new Map<string, CommandHandler<any>>();
+  private eventHandlers = new Map<string, Set<UntypedEventHandler>>();
+  private commandHandlers = new Map<string, UntypedCommandHandler>();
   private devtools: DevTools | null = null;
 
   /** Attach devtools for automatic logging. */
@@ -49,7 +52,14 @@ export class EventBus implements ModuleEventBus {
     }
   }
 
-  /** Subscribe to an event type. Returns an unsubscribe function. */
+  /**
+   * Subscribe to an event type. Returns an unsubscribe function.
+   *
+   * Type safety: the handler receives `EventOf<T>` — the compiler ensures
+   * only valid event types and payloads are used. Internally stored as
+   * `unknown` handler, but the cast is safe because publish() only passes
+   * events whose `.type` matches the subscription key.
+   */
   subscribe<T extends PlatformEventType>(
     type: T,
     handler: (event: EventOf<T>) => void,
@@ -58,11 +68,12 @@ export class EventBus implements ModuleEventBus {
       this.eventHandlers.set(type, new Set());
     }
 
+    const typedHandler = handler as UntypedEventHandler;
     const handlers = this.eventHandlers.get(type)!;
-    handlers.add(handler as EventHandler<any>);
+    handlers.add(typedHandler);
 
     return () => {
-      handlers.delete(handler as EventHandler<any>);
+      handlers.delete(typedHandler);
       if (handlers.size === 0) {
         this.eventHandlers.delete(type);
       }
@@ -94,7 +105,7 @@ export class EventBus implements ModuleEventBus {
     if (this.commandHandlers.has(type)) {
       console.warn(`[EventBus] Overwriting handler for command "${type}"`);
     }
-    this.commandHandlers.set(type, handler as CommandHandler<any>);
+    this.commandHandlers.set(type, handler as UntypedCommandHandler);
 
     return () => {
       this.commandHandlers.delete(type);

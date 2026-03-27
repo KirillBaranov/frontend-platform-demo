@@ -24,9 +24,8 @@ export type { VehicleFilters, CreateOrderInput } from './types.js';
  * when running in mock mode (GitHub Pages).
  */
 async function resolveDataSource(): Promise<DataSource> {
-  const mode =
-    (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_DATA_SOURCE) ||
-    'mock';
+  const meta = import.meta as unknown as { env?: Record<string, string> };
+  const mode = meta.env?.VITE_DATA_SOURCE ?? 'mock';
 
   if (mode === 'http') {
     const { httpDataSource } = await import('./http.js');

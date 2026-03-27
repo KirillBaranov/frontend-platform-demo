@@ -40,7 +40,7 @@ describe('OrderSchema', () => {
   });
 
   it('rejects order without required fields', () => {
-    const { customerName, ...incomplete } = validOrder;
+    const { customerName: _removed, ...incomplete } = validOrder;
     const result = OrderSchema.safeParse(incomplete);
     expect(result.success).toBe(false);
   });
