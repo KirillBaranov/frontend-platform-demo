@@ -150,6 +150,13 @@ const orderSource: IOrderSource = {
       updatedAt: new Date().toISOString(),
     };
     orders = [...orders, order];
+
+    // Mark vehicle as reserved
+    const vehicleIdx = VEHICLES.findIndex((v) => v.id === data.vehicleId);
+    if (vehicleIdx !== -1) {
+      VEHICLES[vehicleIdx] = { ...VEHICLES[vehicleIdx], status: 'reserved' };
+    }
+
     return order;
   },
 };

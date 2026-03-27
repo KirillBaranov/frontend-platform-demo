@@ -124,6 +124,15 @@ export async function fetchOrdersFromDelphi(): Promise<DelphiOrder[]> {
   return delphiCall(DELPHI_ORDERS);
 }
 
+/** Reserve a vehicle in "Delphi" — marks it as RESERVED. */
+export function reserveVehicleInDelphi(vehicleId: string): void {
+  const idx = DELPHI_VEHICLES.findIndex((v) => v.ID === vehicleId);
+  if (idx !== -1) {
+    DELPHI_VEHICLES[idx] = { ...DELPHI_VEHICLES[idx], STATUS: 'RESERVED' };
+    console.log(`[Delphi Adapter] Vehicle ${vehicleId} → RESERVED`);
+  }
+}
+
 /** Normalize Delphi UPPER_CASE format to platform camelCase. */
 export function normalizeVehicle(d: DelphiVehicle) {
   return {

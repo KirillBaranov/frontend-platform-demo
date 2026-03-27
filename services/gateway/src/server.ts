@@ -16,6 +16,7 @@ import cors from 'cors';
 import {
   fetchVehiclesFromDelphi,
   fetchOrdersFromDelphi,
+  reserveVehicleInDelphi,
   normalizeVehicle,
   normalizeOrder,
 } from './delphi-adapter.js';
@@ -75,6 +76,9 @@ app.get('/api/orders/:id', async (req, res) => {
 
 app.post('/api/orders', async (req, res) => {
   const { vehicleId, customerName, customerPhone, totalPrice } = req.body;
+  // Reserve vehicle in Delphi
+  reserveVehicleInDelphi(vehicleId);
+
   const order = {
     id: `o-${Date.now()}`,
     vehicleId,
