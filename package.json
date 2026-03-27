@@ -1,0 +1,19 @@
+{
+  "name": "frontend-platform",
+  "private": true,
+  "description": "Frontend platform for legacy-to-web migration. Framework-agnostic shell, typed contracts, independent modules (React + Vue + any), shared UI kit, BFF gateway. Built to last decades.",
+  "scripts": {
+    "start": "pnpm --parallel --filter './apps/*' --filter './services/*' run dev",
+    "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r run test",
+    "test:e2e": "pnpm --filter e2e run test",
+    "analyze": "pnpm -r run analyze",
+    "clean": "pnpm -r run clean"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}
