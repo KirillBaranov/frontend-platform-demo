@@ -92,6 +92,14 @@ const orderSource: IOrderSource = {
     });
     return OrderSchema.parse(data);
   },
+
+  async updateStatus(id: string, status: string): Promise<Order> {
+    const data = await fetchJSON(`/orders/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+    return OrderSchema.parse(data);
+  },
 };
 
 const dashboardSource: IDashboardSource = {

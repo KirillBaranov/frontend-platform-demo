@@ -42,26 +42,35 @@ export function App({ context }: Props) {
     return unsub;
   }, [loadOrders, context.eventBus]);
 
-  const handleStatusChange = (orderId: string, newStatus: Order['status']) => {
-    // Optimistic update
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === orderId ? { ...o, status: newStatus, updatedAt: new Date().toISOString() } : o,
-      ),
-    );
+  const handleStatusChange = async (orderId: string, newStatus: Order['status']) => {
+    try {
+      const ds = await getDataSource();
+      const updated = await ds.orders.updateStatus(orderId, newStatus);
 
-    context.eventBus.publish({
-      version: 1,
-      type: 'Notification',
-      level: 'success',
-      message: `Заказ ${orderId} → ${newStatus}`,
-    });
+      setOrders((prev) =>
+        prev.map((o) => (o.id === orderId ? updated : o)),
+      );
 
-    // Notify dashboard to refresh
-    context.eventBus.publish({
-      version: 1,
-      type: 'DashboardRefreshRequested',
-    });
+      context.eventBus.publish({
+        version: 1,
+        type: 'Notification',
+        level: 'success',
+        message: `Заказ ${orderId} → ${newStatus}`,
+      });
+
+      context.eventBus.publish({
+        version: 1,
+        type: 'DashboardRefreshRequested',
+      });
+    } catch (err) {
+      console.error('[Orders] Failed to update status:', err);
+      context.eventBus.publish({
+        version: 1,
+        type: 'Notification',
+        level: 'error',
+        message: `Не удалось обновить заказ ${orderId}`,
+      });
+    }
   };
 
   const totalRevenue = orders

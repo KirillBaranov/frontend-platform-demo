@@ -159,6 +159,17 @@ const orderSource: IOrderSource = {
 
     return order;
   },
+
+  async updateStatus(id: string, status: Order['status']): Promise<Order> {
+    await delay(200);
+    const idx = orders.findIndex((o) => o.id === id);
+    if (idx === -1) {
+      throw new Error(`Order "${id}" not found`);
+    }
+    const updated: Order = { ...orders[idx], status, updatedAt: new Date().toISOString() };
+    orders = orders.map((o) => (o.id === id ? updated : o));
+    return updated;
+  },
 };
 
 const dashboardSource: IDashboardSource = {

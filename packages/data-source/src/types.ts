@@ -26,12 +26,14 @@ export interface IOrderSource {
   getAll(): Promise<Order[]>;
   getById(id: string): Promise<Order | null>;
   create(data: CreateOrderInput): Promise<Order>;
+  updateStatus(id: string, status: Order['status']): Promise<Order>;
 }
 
 export interface CreateOrderInput {
   vehicleId: string;
   customerName: string;
   customerPhone?: string;
+  comment?: string;
   totalPrice: number;
 }
 

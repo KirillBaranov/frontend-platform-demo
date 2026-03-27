@@ -69,7 +69,7 @@ export function App({ context }: Props) {
     setOrderVehicle(vehicle);
   };
 
-  const handleCreateOrder = async (data: { customerName: string; customerPhone: string }) => {
+  const handleCreateOrder = async (data: { customerName: string; customerPhone: string; comment: string }) => {
     if (!orderVehicle) return;
 
     try {
@@ -78,6 +78,7 @@ export function App({ context }: Props) {
         vehicleId: orderVehicle.id,
         customerName: data.customerName,
         customerPhone: data.customerPhone || undefined,
+        comment: data.comment || undefined,
         totalPrice: orderVehicle.price,
       });
 
@@ -99,6 +100,9 @@ export function App({ context }: Props) {
       });
 
       setOrderVehicle(null);
+      setSelectedVehicle(null);
+      setViewMode('table');
+      await loadVehicles();
     } catch (err) {
       console.error('[Catalog] Failed to create order:', err);
       context.eventBus.publish({
