@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoDealer — Frontend Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="shell-layout">
+    <nav class="shell-sidebar" id="sidebar">
+      <!-- Rendered by shell/main.ts -->
+    </nav>
+
+    <header class="shell-header">
+      <h1 style="font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold);">
+        AutoDealer Platform
+      </h1>
+      <div id="flag-toggles" class="flex items-center gap-4">
+        <!-- Feature flag toggles rendered by shell/main.ts -->
+      </div>
+    </header>
+
+    <main class="shell-main" id="module-root">
+      <!-- Active module mounts here -->
+      <div class="module-loading">Загрузка...</div>
+    </main>
+  </div>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

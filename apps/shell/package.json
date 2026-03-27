@@ -1,0 +1,37 @@
+{
+  "name": "@platform/shell",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:ghpages": "tsc && vite build --mode ghpages",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "analyze": "vite build --mode analyze",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@platform/contracts": "workspace:*",
+    "@platform/ui-kit": "workspace:*",
+    "@platform/data-source": "workspace:*",
+    "@platform/module-catalog": "workspace:*",
+    "@platform/module-dashboard": "workspace:*",
+    "@platform/module-orders": "workspace:*",
+    "@platform/module-analytics": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.0",
+    "@vitejs/plugin-vue": "^5.2.0",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0",
+    "vitest": "^2.1.0",
+    "rollup-plugin-visualizer": "^5.12.0"
+  }
+}
