@@ -1,5 +1,6 @@
 {
   "name": "frontend-platform",
+  "type": "module",
   "private": true,
   "description": "Frontend platform for legacy-to-web migration. Framework-agnostic shell, typed contracts, independent modules (React + Vue + any), shared UI kit, BFF gateway. Built to last decades.",
   "scripts": {
@@ -15,5 +16,6 @@
   "engines": {
     "node": ">=20",
     "pnpm": ">=9"
-  }
+  },
+  "devDependencies": {}
 }

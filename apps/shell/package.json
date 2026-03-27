@@ -16,22 +16,25 @@
   },
   "dependencies": {
     "@platform/contracts": "workspace:*",
-    "@platform/ui-kit": "workspace:*",
     "@platform/data-source": "workspace:*",
+    "@platform/module-analytics": "workspace:*",
     "@platform/module-catalog": "workspace:*",
     "@platform/module-dashboard": "workspace:*",
     "@platform/module-orders": "workspace:*",
-    "@platform/module-analytics": "workspace:*",
+    "@platform/ui-kit": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "vue": "^3.5.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@vitejs/plugin-react": "^4.3.0",
     "@vitejs/plugin-vue": "^5.2.0",
+    "eslint": "^10.1.0",
+    "rollup-plugin-visualizer": "^5.12.0",
     "typescript": "^5.6.0",
+    "typescript-eslint": "^8.57.2",
     "vite": "^6.0.0",
-    "vitest": "^2.1.0",
-    "rollup-plugin-visualizer": "^5.12.0"
+    "vitest": "^2.1.0"
   }
 }

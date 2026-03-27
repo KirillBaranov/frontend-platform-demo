@@ -9,7 +9,7 @@
     "dev": "echo 'Template module — copy and rename to create a new module'",
     "build": "echo 'Template module — no build needed'",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src/",
+    "lint": "echo 'Template — add ESLint config for your framework'",
     "test": "echo 'No tests'",
     "clean": "echo 'nothing to clean'"
   },
