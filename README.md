@@ -3,13 +3,34 @@
 > Micro-frontend платформа для постепенной миграции с Delphi на веб.
 > Фреймворк-агностичная, масштабируемая, рассчитана на десятилетия.
 
+### TL;DR
+
+- Независимые модули на любом фреймворке (React + Vue в демо)
+- Контракты вместо связанности — модули не знают друг о друге
+- Gateway BFF для изоляции legacy (Delphi)
+- Feature flags для поэтапного rollout
+- Shell на vanilla TS — переживёт любой фреймворк
+
+### Проблема
+
+Enterprise frontend-системы страдают от tight coupling, медленных релизов и зависимости от legacy. Добавить фичу = тронуть всё. Миграция = big-bang переписывание. Новая команда = месяцы onboarding.
+
+### Решение
+
+Платформа где каждый модуль — независимый micro-frontend. Команды работают автономно на своём стеке. Gateway изолирует legacy. Миграция идёт по кускам, не останавливая разработку.
+
 ![Overview](docs/assets/overview.png)
 
 ## Демо
 
 **[Открыть GitHub Pages →](https://kirillbaranov.github.io/frontend-platform-demo/)**
 
-GitHub Pages — статическая версия с mock-данными. Навигация, feature flags, DevTools, cross-module события работают. Данные зашиты — нет обращений к серверу.
+GitHub Pages — статическая версия с mock-данными. Что попробовать:
+
+1. Переключить модули в sidebar (Каталог → Дашборд → Заказы → Аналитика)
+2. Кликнуть по автомобилю → детальная карточка → "Оформить заказ"
+3. Переключить feature flags в хедере (Trade-in, Сеть, DevTools)
+4. Посмотреть DevTools панель внизу — события между модулями в реальном времени
 
 Для полноценной работы с Gateway BFF и данными из "Delphi" — локальный запуск:
 
@@ -125,7 +146,7 @@ platform-demo-root/
 │   ├── contracts/           ← Типы, версионированные события, команды, Zod схемы
 │   ├── ui-kit/              ← CSS design system (tokens + компоненты)
 │   └── data-source/         ← Adapter layer (mock / http)
-├── e2e/                     ← Playwright тесты (6 test suites)
+├── e2e/                     ← Playwright тесты (5 test suites)
 ├── docs/                    ← Архитектура, 7 ADR, руководства
 └── .github/workflows/       ← CI pipeline
 ```

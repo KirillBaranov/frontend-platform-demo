@@ -35,7 +35,7 @@ pnpm --filter @platform/data-source test       # mock data source
 
 **Что:** пользовательские сценарии через браузер. Тестируют поведение, не DOM-структуру.
 
-**6 Test Suites:**
+**5 Test Suites:**
 
 | Suite | Что проверяет |
 |-------|--------------|
