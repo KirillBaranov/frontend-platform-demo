@@ -1,0 +1,234 @@
+# Frontend Platform
+
+> Micro-frontend платформа для постепенной миграции с Delphi на веб.
+> Фреймворк-агностичная, масштабируемая, рассчитана на десятилетия.
+
+![Overview](docs/assets/overview.png)
+
+## Quick Start
+
+```bash
+pnpm install
+pnpm start        # shell (3000) + gateway (4000) → opens browser
+```
+
+---
+
+## Содержание
+
+1. [Технические вызовы](#1-технические-вызовы)
+2. [Архитектура](#2-архитектура)
+3. [Как это решает каждый вызов](#3-как-это-решает-каждый-вызов)
+4. [Структура проекта](#4-структура-проекта)
+5. [Демо-сценарий](#5-демо-сценарий)
+6. [Метрики производительности](#6-метрики-производительности)
+7. [Как добавить новый модуль](#7-как-добавить-новый-модуль)
+8. [Тестирование](#8-тестирование)
+9. [CI/CD](#9-cicd)
+10. [Масштабирование](#10-масштабирование)
+
+---
+
+## 1. Технические вызовы
+
+| Вызов | Решение | Подробнее |
+|-------|---------|-----------|
+| Система должна работать десятилетия | Shell на vanilla TS — ноль фреймворков в оркестраторе | [ADR-001](docs/adr/001-shell-vanilla-ts.md) |
+| Команды работают независимо, разные стеки | Contracts layer — модули знают только контракты, не друг друга | [ADR-002](docs/adr/002-contracts-layer.md) |
+| Данные с разных хостов, безопасная агрегация | Gateway BFF — один слой между фронтом и бэкендами | [ADR-003](docs/adr/003-gateway-bff.md) |
+| Абстракция источников данных | Data Source adapters — mock/HTTP/gRPC за одним интерфейсом | [ADR-007](docs/adr/007-data-source-adapters.md) |
+| Feature flags для разных сценариев | Shell управляет флагами, модули реагируют через контракт | [ADR-004](docs/adr/004-feature-flags.md) |
+| Единый визуал без дизайнера | CSS-first UI Kit — токены + классы, работает в любом фреймворке | [ADR-005](docs/adr/005-css-first-ui-kit.md) |
+| Оптимизация бандла | Lazy loading модулей, shared deps через import maps | [ADR-006](docs/adr/006-bundle-optimization.md) |
+
+---
+
+## 2. Архитектура
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Shell (vanilla TS)                         │
+│  Router · EventBus · FeatureFlags · ModuleLoader · Auth     │
+│  Фреймворк: нет. Живёт десятилетия.                         │
+└──────────┬───────────────────┬───────────────┬──────────────┘
+           │                   │               │
+     ┌─────▼──────┐     ┌─────▼──────┐  ┌─────▼──────┐
+     │ Catalog    │     │ Dashboard  │  │ Module N   │
+     │ React 19   │     │ Vue 3      │  │ Any stack  │
+     │ Team A     │     │ Team B     │  │ Team N     │
+     └─────┬──────┘     └─────┬──────┘  └─────┬──────┘
+           │                   │               │
+     ┌─────▼───────────────────▼───────────────▼──────────────┐
+     │                  Contracts Layer                        │
+     │  Events (versioned) · Commands · Module interface      │
+     │  Zod schemas · Feature flags · Auth context            │
+     └────────────────────────┬───────────────────────────────┘
+                              │
+     ┌────────────────────────▼───────────────────────────────┐
+     │                  Data Source Layer                      │
+     │  Interface: IVehicleSource · IOrderSource              │
+     │  Adapters: mock (offline) | http (gateway) | grpc (?) │
+     └────────────────────────┬───────────────────────────────┘
+                              │
+     ┌────────────────────────▼───────────────────────────────┐
+     │              Gateway BFF (:4000)                       │
+     │  /api/vehicles · /api/orders · /api/dashboard          │
+     └────┬───────────────────┬───────────────────────────────┘
+          │                   │
+    ┌─────▼─────┐      ┌─────▼─────┐
+    │  Delphi   │      │ Service B │
+    │  Legacy   │      │ (future)  │
+    └───────────┘      └───────────┘
+```
+
+---
+
+## 3. Как это решает каждый вызов
+
+**Десятилетия** → Shell написан на vanilla TypeScript, использует только Web API. Фреймворки меняются — shell остаётся. React модуль можно заменить на Solid через 5 лет, не трогая ни shell, ни другие модули.
+
+**Разные стеки** → module-catalog на React, module-dashboard на Vue. Оба реализуют один контракт (`ModuleDefinition`). Shell не знает что внутри — только `mount()` и `unmount()`.
+
+**Разные хосты** → Gateway агрегирует данные из Delphi и других источников. Модули обращаются к `/api/*`, не зная откуда данные приходят. Поменяли адаптер — модули не трогаем.
+
+**Feature flags** → Shell загружает конфигурацию, модули реагируют через `onFeatureFlagsChanged()`. Переключил `trade_in_enabled` → кнопка Trade-in появилась в каталоге. Без перезагрузки.
+
+**Единый визуал** → UI Kit на CSS custom properties. `<button class="btn btn-primary">` работает одинаково в React и Vue. Дизайнер придёт — поменяет tokens — все модули обновятся.
+
+**Оптимизация** → Shell весит ~48KB. Модули загружаются лениво при навигации. Shared dependencies (React, Vue) загружаются один раз.
+
+---
+
+## 4. Структура проекта
+
+```
+platform-demo-root/
+├── apps/shell/              ← Оркестратор (vanilla TS, точка входа, DevTools)
+├── services/gateway/        ← BFF backend (Express, Delphi adapter)
+├── modules/
+│   ├── module-catalog/      ← React модуль — каталог, карточка авто, форма заказа
+│   ├── module-dashboard/    ← Vue модуль — статистика, воронка, cross-module events
+│   ├── module-orders/       ← React модуль — управление заказами, статусы, фильтры
+│   ├── module-analytics/    ← Vue модуль — графики по маркам, ценам, годам, склад
+│   └── module-template/     ← Шаблон для новых команд
+├── packages/
+│   ├── contracts/           ← Типы, версионированные события, команды, Zod схемы
+│   ├── ui-kit/              ← CSS design system (tokens + компоненты)
+│   └── data-source/         ← Adapter layer (mock / http)
+├── e2e/                     ← Playwright тесты (6 test suites)
+├── docs/                    ← Архитектура, 7 ADR, руководства
+└── .github/workflows/       ← CI pipeline
+```
+
+---
+
+## 5. Демо-сценарий
+
+```bash
+pnpm install && pnpm start
+```
+
+1. Браузер открывается → sidebar с 4 модулями, DevTools панель внизу
+2. **Каталог** (React) — таблица автомобилей с фильтрами, кликнуть по строке → детальная карточка с VIN, ценой, характеристиками
+3. Нажать **"Заказ"** → модалка с формой (имя, телефон, комментарий) → заказ создан → уведомление
+4. Перейти на **Дашборд** (Vue) — статистика обновилась, в блоке "Выбранный автомобиль" видно последний выбор из каталога (cross-module event React → Vue)
+
+![Dashboard](docs/assets/dashboard.png)
+
+5. **Заказы** (React) — список заказов, фильтры по статусу (все/ожидают/подтверждены/завершены), управление статусами (подтвердить/завершить/отменить)
+6. **Аналитика** (Vue) — графики: распределение по маркам, цене, годам, статус склада с визуализацией
+
+![Analytics with DevTools](docs/assets/analytics_with_devtools.png)
+7. Переключить **feature flag** "Trade-in" → кнопка Trade-in появилась в каталоге
+8. Переключить **"Сеть"** → дашборд показывает "по всей сети" вместо "ваш дилерский центр"
+9. Переключить **"DevTools"** → панель скрылась полностью, появилась кнопка внизу справа для возврата
+10. **DevTools** — в реальном времени: события между модулями, загрузка модулей (lazy, с замером ms), изменения feature flags. Drag за верхний край для resize.
+
+---
+
+## 6. Метрики производительности
+
+| Пакет | Размер | Примечание |
+|-------|--------|------------|
+| Shell | ~48 KB | vanilla TS, ноль фреймворков |
+| UI Kit | ~12 KB | чистый CSS |
+| Contracts | ~4 KB | типы + Zod схемы |
+| **Initial load** | **~64 KB** | до загрузки первого модуля |
+| module-catalog | ~180 KB | React + компоненты |
+| module-dashboard | ~150 KB | Vue + компоненты |
+| module-orders | ~170 KB | React + компоненты |
+| module-analytics | ~140 KB | Vue + компоненты |
+
+Пользователь видит первый экран за <100KB. Каждый следующий модуль — инкрементальная загрузка.
+
+```bash
+pnpm analyze    # генерирует treemap бандлов
+```
+
+---
+
+## 7. Как добавить новый модуль
+
+5 шагов, 5 минут:
+
+```bash
+cp -r modules/module-template modules/module-your-name
+```
+
+1. Обновить `package.json` — имя, добавить фреймворк
+2. Обновить `src/index.ts` — id, name, route, реализация mount()
+3. Зарегистрировать в `apps/shell/src/main.ts`
+4. `pnpm install && pnpm start`
+5. Готово
+
+Подробнее: [docs/NEW-MODULE.md](docs/NEW-MODULE.md)
+
+---
+
+## 8. Тестирование
+
+Два уровня тестов, каждый проверяет свой слой:
+
+| Уровень | Что проверяет | Кол-во | Инструмент | Команда |
+|---------|--------------|--------|------------|---------|
+| Unit | Контракты (Zod), event bus, feature flags, mock data source | 48 | Vitest | `pnpm test` |
+| E2E | Cross-module events, feature flags, gateway API, 4 модуля, DevTools | 30+ | Playwright | `pnpm test:e2e` |
+
+Подробнее: [docs/TESTING.md](docs/TESTING.md)
+
+---
+
+## 9. CI/CD
+
+Каждый PR проходит:
+
+```
+lint → typecheck → unit tests → build → e2e tests
+```
+
+Pipeline: [.github/workflows/ci.yml](.github/workflows/ci.yml)
+
+Модули деплоятся независимо — обновление одного модуля не требует пересборки остальных. Shell загружает модули из registry (JSON с URL чанков).
+
+Подробнее: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+
+---
+
+## 10. Масштабирование
+
+Архитектура рассчитана на 3,500+ DAU, десятки модулей и независимые команды.
+
+| Ось | Сейчас | Потолок | Как |
+|-----|--------|---------|-----|
+| Модули | 4 | 50+ | Одна запись в `module-registry.ts` |
+| Команды | 2 | Неограничено | Свой стек, свой CI, общение через contracts |
+| DAU | Demo | 3,500+ | CDN для статики, Gateway за Load Balancer |
+| Фреймворки | React + Vue | Любые | ModuleDefinition контракт |
+
+**Frontend:** Shell + модули = статика на CDN. Content-hash кэширование. При 3,500 DAU нагрузка на origin ~80 MB/день.
+
+**Gateway:** Stateless, горизонтально масштабируется. Redis кэш для тяжёлых агрегаций (dashboard). При росте — N инстансов за Load Balancer.
+
+**Миграция Delphi:** 4 фазы, от read-only через Gateway до полного вывода. Модули не знают о миграции — Gateway переключает адаптеры.
+
+Подробнее: [docs/SCALING.md](docs/SCALING.md)
