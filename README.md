@@ -62,15 +62,15 @@ pnpm start        # shell (3000) + gateway (4000) → opens browser
 
 ## 1. Технические вызовы
 
-| Вызов | Решение | Подробнее |
-|-------|---------|-----------|
-| Система должна работать десятилетия | Shell на vanilla TS — ноль фреймворков в оркестраторе | [ADR-001](docs/adr/001-shell-vanilla-ts.md) |
-| Команды работают независимо, разные стеки | Contracts layer — модули знают только контракты, не друг друга | [ADR-002](docs/adr/002-contracts-layer.md) |
-| Данные с разных хостов, безопасная агрегация | Gateway BFF — один слой между фронтом и бэкендами | [ADR-003](docs/adr/003-gateway-bff.md) |
-| Абстракция источников данных | Data Source adapters — mock/HTTP/gRPC за одним интерфейсом | [ADR-007](docs/adr/007-data-source-adapters.md) |
-| Feature flags для разных сценариев | Shell управляет флагами, модули реагируют через контракт | [ADR-004](docs/adr/004-feature-flags.md) |
-| Единый визуал без дизайнера | CSS-first UI Kit — токены + классы, работает в любом фреймворке | [ADR-005](docs/adr/005-css-first-ui-kit.md) |
-| Оптимизация бандла | Lazy loading модулей, shared deps через import maps | [ADR-006](docs/adr/006-bundle-optimization.md) |
+| Вызов                                        | Решение                                                         | Подробнее                                       |
+| -------------------------------------------- | --------------------------------------------------------------- | ----------------------------------------------- |
+| Система должна работать десятилетия          | Shell на vanilla TS — ноль фреймворков в оркестраторе           | [ADR-001](docs/adr/001-shell-vanilla-ts.md)     |
+| Команды работают независимо, разные стеки    | Contracts layer — модули знают только контракты, не друг друга  | [ADR-002](docs/adr/002-contracts-layer.md)      |
+| Данные с разных хостов, безопасная агрегация | Gateway BFF — один слой между фронтом и бэкендами               | [ADR-003](docs/adr/003-gateway-bff.md)          |
+| Абстракция источников данных                 | Data Source adapters — mock/HTTP/gRPC за одним интерфейсом      | [ADR-007](docs/adr/007-data-source-adapters.md) |
+| Feature flags для разных сценариев           | Shell управляет флагами, модули реагируют через контракт        | [ADR-004](docs/adr/004-feature-flags.md)        |
+| Единый визуал без дизайнера                  | CSS-first UI Kit — токены + классы, работает в любом фреймворке | [ADR-005](docs/adr/005-css-first-ui-kit.md)     |
+| Оптимизация бандла                           | Lazy loading модулей, shared deps через import maps             | [ADR-006](docs/adr/006-bundle-optimization.md)  |
 
 ---
 
@@ -78,38 +78,38 @@ pnpm start        # shell (3000) + gateway (4000) → opens browser
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Shell (vanilla TS)                         │
+│                    Shell (vanilla TS)                       │
 │  Router · EventBus · FeatureFlags · ModuleLoader · Auth     │
 │  Фреймворк: нет. Живёт десятилетия.                         │
-└──────────┬───────────────────┬───────────────┬──────────────┘
-           │                   │               │
+└──────────┬──────────────────┬───────────────┬──────-────────┘
+           │                  │               │
      ┌─────▼──────┐     ┌─────▼──────┐  ┌─────▼──────┐
      │ Catalog    │     │ Dashboard  │  │ Module N   │
      │ React 19   │     │ Vue 3      │  │ Any stack  │
      │ Team A     │     │ Team B     │  │ Team N     │
      └─────┬──────┘     └─────┬──────┘  └─────┬──────┘
-           │                   │               │
-     ┌─────▼───────────────────▼───────────────▼──────────────┐
-     │                  Contracts Layer                        │
+           │                  │               │
+     ┌─────▼──────────────────▼───────────────▼──────────────-┐
+     │                  Contracts Layer                       │
      │  Events (versioned) · Commands · Module interface      │
      │  Zod schemas · Feature flags · Auth context            │
      └────────────────────────┬───────────────────────────────┘
                               │
      ┌────────────────────────▼───────────────────────────────┐
-     │                  Data Source Layer                      │
+     │                  Data Source Layer                     │
      │  Interface: IVehicleSource · IOrderSource              │
-     │  Adapters: mock (offline) | http (gateway) | grpc (?) │
+     │  Adapters: mock (offline) | http (gateway) | grpc (?)  │
      └────────────────────────┬───────────────────────────────┘
                               │
      ┌────────────────────────▼───────────────────────────────┐
      │              Gateway BFF (:4000)                       │
      │  /api/vehicles · /api/orders · /api/dashboard          │
-     └────┬───────────────────┬───────────────────────────────┘
+     └────┬──────────────────-┬────────-──────────────────────┘
           │                   │
-    ┌─────▼─────┐      ┌─────▼─────┐
-    │  Delphi   │      │ Service B │
-    │  Legacy   │      │ (future)  │
-    └───────────┘      └───────────┘
+    ┌─────▼─────┐       ┌─────▼─────┐
+    │  Delphi   │       │ Service B │
+    │  Legacy   │       │ (future)  │
+    └───────────┘       └───────────┘
 ```
 
 ---
@@ -169,26 +169,22 @@ pnpm install && pnpm start
 5. **Заказы** (React) — список заказов, фильтры по статусу (все/ожидают/подтверждены/завершены), управление статусами (подтвердить/завершить/отменить)
 6. **Аналитика** (Vue) — графики: распределение по маркам, цене, годам, статус склада с визуализацией
 
-![Analytics with DevTools](docs/assets/analytics_with_devtools.png)
-7. Переключить **feature flag** "Trade-in" → кнопка Trade-in появилась в каталоге
-8. Переключить **"Сеть"** → дашборд показывает "по всей сети" вместо "ваш дилерский центр"
-9. Переключить **"DevTools"** → панель скрылась полностью, появилась кнопка внизу справа для возврата
-10. **DevTools** — в реальном времени: события между модулями, загрузка модулей (lazy, с замером ms), изменения feature flags. Drag за верхний край для resize.
+![Analytics with DevTools](docs/assets/analytics_with_devtools.png) 7. Переключить **feature flag** "Trade-in" → кнопка Trade-in появилась в каталоге 8. Переключить **"Сеть"** → дашборд показывает "по всей сети" вместо "ваш дилерский центр" 9. Переключить **"DevTools"** → панель скрылась полностью, появилась кнопка внизу справа для возврата 10. **DevTools** — в реальном времени: события между модулями, загрузка модулей (lazy, с замером ms), изменения feature flags. Drag за верхний край для resize.
 
 ---
 
 ## 6. Метрики производительности
 
-| Пакет | Размер | Примечание |
-|-------|--------|------------|
-| Shell | ~48 KB | vanilla TS, ноль фреймворков |
-| UI Kit | ~12 KB | чистый CSS |
-| Contracts | ~4 KB | типы + Zod схемы |
-| **Initial load** | **~64 KB** | до загрузки первого модуля |
-| module-catalog | ~180 KB | React + компоненты |
-| module-dashboard | ~150 KB | Vue + компоненты |
-| module-orders | ~170 KB | React + компоненты |
-| module-analytics | ~140 KB | Vue + компоненты |
+| Пакет            | Размер     | Примечание                   |
+| ---------------- | ---------- | ---------------------------- |
+| Shell            | ~48 KB     | vanilla TS, ноль фреймворков |
+| UI Kit           | ~12 KB     | чистый CSS                   |
+| Contracts        | ~4 KB      | типы + Zod схемы             |
+| **Initial load** | **~64 KB** | до загрузки первого модуля   |
+| module-catalog   | ~180 KB    | React + компоненты           |
+| module-dashboard | ~150 KB    | Vue + компоненты             |
+| module-orders    | ~170 KB    | React + компоненты           |
+| module-analytics | ~140 KB    | Vue + компоненты             |
 
 Пользователь видит первый экран за <100KB. Каждый следующий модуль — инкрементальная загрузка.
 
@@ -220,10 +216,10 @@ cp -r modules/module-template modules/module-your-name
 
 Два уровня тестов, каждый проверяет свой слой:
 
-| Уровень | Что проверяет | Кол-во | Инструмент | Команда |
-|---------|--------------|--------|------------|---------|
-| Unit | Контракты (Zod), event bus, feature flags, mock data source | 48 | Vitest | `pnpm test` |
-| E2E | Cross-module events, feature flags, gateway API, 4 модуля, DevTools | 30+ | Playwright | `pnpm test:e2e` |
+| Уровень | Что проверяет                                                       | Кол-во | Инструмент | Команда         |
+| ------- | ------------------------------------------------------------------- | ------ | ---------- | --------------- |
+| Unit    | Контракты (Zod), event bus, feature flags, mock data source         | 48     | Vitest     | `pnpm test`     |
+| E2E     | Cross-module events, feature flags, gateway API, 4 модуля, DevTools | 30+    | Playwright | `pnpm test:e2e` |
 
 Подробнее: [docs/TESTING.md](docs/TESTING.md)
 
@@ -249,12 +245,12 @@ Pipeline: [.github/workflows/ci.yml](.github/workflows/ci.yml)
 
 Архитектура рассчитана на 3,500+ DAU, десятки модулей и независимые команды.
 
-| Ось | Сейчас | Потолок | Как |
-|-----|--------|---------|-----|
-| Модули | 4 | 50+ | Одна запись в `module-registry.ts` |
-| Команды | 2 | Неограничено | Свой стек, свой CI, общение через contracts |
-| DAU | Demo | 3,500+ | CDN для статики, Gateway за Load Balancer |
-| Фреймворки | React + Vue | Любые | ModuleDefinition контракт |
+| Ось        | Сейчас      | Потолок      | Как                                         |
+| ---------- | ----------- | ------------ | ------------------------------------------- |
+| Модули     | 4           | 50+          | Одна запись в `module-registry.ts`          |
+| Команды    | 2           | Неограничено | Свой стек, свой CI, общение через contracts |
+| DAU        | Demo        | 3,500+       | CDN для статики, Gateway за Load Balancer   |
+| Фреймворки | React + Vue | Любые        | ModuleDefinition контракт                   |
 
 **Frontend:** Shell + модули = статика на CDN. Content-hash кэширование. При 3,500 DAU нагрузка на origin ~80 MB/день.
 
