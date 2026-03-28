@@ -45,7 +45,7 @@ const COLORS = [
               minHeight: '20px',
             }"
           />
-          <span class="text-xs text-muted" style="text-align:center;word-break:break-word">
+          <span class="text-xs text-muted" style="text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;max-width:70px" :title="brand.brand">
             {{ brand.brand }}
           </span>
         </div>
