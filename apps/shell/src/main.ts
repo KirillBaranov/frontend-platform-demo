@@ -181,17 +181,16 @@ function renderFlagToggles(): void {
   const container = document.getElementById('flag-toggles')!;
   const allFlags = flags.getAll();
 
-  const flagLabels: Record<string, string> = {
-    dealer_mode: 'Дилер',
-    network_mode: 'Сеть',
-    trade_in_enabled: 'Trade-in',
-    devtools_enabled: 'DevTools',
+  const flagConfig: Record<string, { label: string; tooltip: string }> = {
+    network_mode: { label: 'Вся сеть', tooltip: 'Показать данные по всей сети дилеров (все dealer ID)' },
+    trade_in_enabled: { label: 'Trade-in', tooltip: 'Включить модуль Trade-in в каталоге' },
+    devtools_enabled: { label: 'DevTools', tooltip: 'Панель разработчика с real-time логами' },
   };
 
-  container.innerHTML = Object.entries(flagLabels)
+  container.innerHTML = Object.entries(flagConfig)
     .map(
-      ([key, label]) => `
-        <label class="flex items-center gap-2 text-sm" style="cursor:pointer">
+      ([key, { label, tooltip }]) => `
+        <label class="flex items-center gap-2 text-sm" style="cursor:pointer" title="${tooltip}">
           <input type="checkbox" data-flag="${key}" ${allFlags[key] ? 'checked' : ''}/>
           ${label}
         </label>`,

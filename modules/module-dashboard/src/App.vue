@@ -91,7 +91,12 @@ onUnmounted(() => {
 <template>
   <div class="flex-col gap-4">
     <div class="flex items-center justify-between">
-      <h2>{{ context.t('dashboard.title') }}</h2>
+      <div class="flex items-center gap-3">
+        <h2>{{ context.t('dashboard.title') }}</h2>
+        <span :class="['badge', networkMode ? 'badge-info' : 'badge-neutral']">
+          {{ networkMode ? 'Вся сеть' : 'Дилер 1' }}
+        </span>
+      </div>
       <button class="btn btn-secondary btn-sm" @click="loadStats">
         ↻ Обновить
       </button>

@@ -21,9 +21,9 @@ JSON config / API → FeatureFlagManager (shell) → ModuleContext → Module UI
 
 | Флаг | Описание | По умолчанию |
 |------|----------|-------------|
-| `dealer_mode` | Один дилерский центр | `true` |
-| `network_mode` | Вся сеть дилеров | `false` |
-| `trade_in_enabled` | Модуль Trade-in | `false` |
+| `network_mode` | Данные одного дилера vs агрегация по всей сети | `false` |
+| `trade_in_enabled` | Trade-in функционал в каталоге | `false` |
+| `devtools_enabled` | Platform DevTools панель | `true` |
 
 ### Как модули реагируют
 

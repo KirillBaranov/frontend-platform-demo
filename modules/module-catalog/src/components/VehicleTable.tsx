@@ -5,7 +5,13 @@ interface Props {
   onSelect: (vehicle: Vehicle) => void;
   onCreateOrder: (vehicle: Vehicle) => void;
   tradeInEnabled: boolean;
+  networkMode: boolean;
 }
+
+const DEALER_NAMES: Record<string, string> = {
+  'dealer-1': 'Центральный',
+  'dealer-2': 'Южный',
+};
 
 const STATUS_MAP: Record<string, { label: string; className: string }> = {
   in_stock: { label: 'В наличии', className: 'badge badge-success' },
@@ -17,7 +23,7 @@ function formatPrice(price: number): string {
   return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(price);
 }
 
-export function VehicleTable({ vehicles, onSelect, onCreateOrder, tradeInEnabled }: Props) {
+export function VehicleTable({ vehicles, onSelect, onCreateOrder, tradeInEnabled, networkMode }: Props) {
   if (vehicles.length === 0) {
     return (
       <div className="card">
@@ -38,7 +44,9 @@ export function VehicleTable({ vehicles, onSelect, onCreateOrder, tradeInEnabled
             <th>Цена</th>
             <th>Пробег</th>
             <th>Цвет</th>
+            {networkMode && <th>Дилер</th>}
             <th>Статус</th>
+            {tradeInEnabled && <th>Trade-in</th>}
             <th>Действия</th>
           </tr>
         </thead>
@@ -55,7 +63,17 @@ export function VehicleTable({ vehicles, onSelect, onCreateOrder, tradeInEnabled
                 <td className="font-semibold">{formatPrice(vehicle.price)}</td>
                 <td>{vehicle.mileage > 0 ? `${vehicle.mileage.toLocaleString('ru-RU')} км` : 'Новый'}</td>
                 <td>{vehicle.color}</td>
+                {networkMode && <td><span className="badge badge-neutral">{DEALER_NAMES[vehicle.dealerId] ?? vehicle.dealerId}</span></td>}
                 <td><span className={status.className}>{status.label}</span></td>
+                {tradeInEnabled && (
+                  <td>
+                    {vehicle.status === 'in_stock' ? (
+                      <span className="badge badge-success">Доступен</span>
+                    ) : (
+                      <span className="badge badge-neutral">—</span>
+                    )}
+                  </td>
+                )}
                 <td onClick={(e) => e.stopPropagation()}>
                   <div className="flex gap-2">
                     {vehicle.status === 'in_stock' && (
@@ -64,11 +82,6 @@ export function VehicleTable({ vehicles, onSelect, onCreateOrder, tradeInEnabled
                         onClick={() => onCreateOrder(vehicle)}
                       >
                         Заказ
-                      </button>
-                    )}
-                    {tradeInEnabled && vehicle.status === 'in_stock' && (
-                      <button className="btn btn-secondary btn-sm">
-                        Trade-in
                       </button>
                     )}
                   </div>

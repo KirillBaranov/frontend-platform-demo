@@ -21,12 +21,18 @@ export function App({ context }: Props) {
   const [viewMode, setViewMode] = useState<ViewMode>('table');
 
   const tradeInEnabled = context.featureFlags.trade_in_enabled ?? false;
+  const networkMode = context.featureFlags.network_mode ?? false;
 
   const loadVehicles = useCallback(async (filters?: VehicleFilters) => {
     setLoading(true);
     try {
       const ds = await getDataSource();
-      const data = await ds.vehicles.getAll(filters);
+      const appliedFilters: VehicleFilters = {
+        ...filters,
+        // Без "Вся сеть" — показываем только dealer-1 (текущий дилер)
+        ...(!networkMode && !filters?.dealerId ? { dealerId: 'dealer-1' } : {}),
+      };
+      const data = await ds.vehicles.getAll(appliedFilters);
       setVehicles(data);
 
       if (brands.length === 0) {
@@ -44,7 +50,7 @@ export function App({ context }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [context.eventBus, brands.length]);
+  }, [context.eventBus, brands.length, networkMode]);
 
   useEffect(() => {
     loadVehicles();
@@ -119,6 +125,9 @@ export function App({ context }: Props) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <h2>{context.t('catalog.title')}</h2>
+          <span className={`badge ${networkMode ? 'badge-info' : 'badge-neutral'}`}>
+            {networkMode ? 'Вся сеть' : 'Дилер 1'}
+          </span>
           {viewMode === 'detail' && (
             <button
               className="btn btn-ghost btn-sm"
@@ -143,6 +152,7 @@ export function App({ context }: Props) {
               onSelect={handleSelect}
               onCreateOrder={handleOpenOrderModal}
               tradeInEnabled={tradeInEnabled}
+              networkMode={networkMode}
             />
           )}
         </>
