@@ -4,15 +4,15 @@ import { FeatureFlagManager } from './feature-flags.js';
 describe('FeatureFlagManager', () => {
   it('loads default flags', () => {
     const mgr = new FeatureFlagManager();
-    expect(mgr.isEnabled('dealer_mode')).toBe(true);
     expect(mgr.isEnabled('network_mode')).toBe(false);
     expect(mgr.isEnabled('trade_in_enabled')).toBe(false);
+    expect(mgr.isEnabled('devtools_enabled')).toBe(true);
   });
 
   it('accepts initial overrides', () => {
     const mgr = new FeatureFlagManager({ trade_in_enabled: true });
     expect(mgr.isEnabled('trade_in_enabled')).toBe(true);
-    expect(mgr.isEnabled('dealer_mode')).toBe(true); // default preserved
+    expect(mgr.isEnabled('network_mode')).toBe(false); // default preserved
   });
 
   it('set updates a flag', () => {
@@ -55,7 +55,7 @@ describe('FeatureFlagManager', () => {
     const listener = vi.fn();
     mgr.onChange(listener);
 
-    mgr.set('dealer_mode', true); // already true
+    mgr.set('network_mode', false); // already false
 
     expect(listener).not.toHaveBeenCalled();
   });
