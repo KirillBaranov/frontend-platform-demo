@@ -20,45 +20,99 @@ import type {
 // ---------------------------------------------------------------------------
 
 const VEHICLES: Vehicle[] = [
+  // BMW — 3 авто
   {
     id: 'v-001', vin: 'WBA11AA0X0CK12345', brand: 'BMW', model: '320d',
     year: 2024, price: 4_200_000, mileage: 0, color: 'Серебристый',
     status: 'in_stock', dealerId: 'dealer-1', createdAt: '2026-01-15T10:00:00Z',
   },
   {
-    id: 'v-002', vin: 'WVWZZZ3CZWE123456', brand: 'Volkswagen', model: 'Tiguan',
-    year: 2025, price: 3_800_000, mileage: 0, color: 'Белый',
-    status: 'in_stock', dealerId: 'dealer-1', createdAt: '2026-02-01T09:00:00Z',
+    id: 'v-009', vin: 'WBA52EL0X0CH98765', brand: 'BMW', model: 'X5',
+    year: 2025, price: 7_800_000, mileage: 0, color: 'Чёрный',
+    status: 'in_stock', dealerId: 'dealer-1', createdAt: '2026-03-05T09:00:00Z',
   },
+  {
+    id: 'v-010', vin: 'WBA33GL0X0CJ45678', brand: 'BMW', model: '520i',
+    year: 2023, price: 4_900_000, mileage: 18_000, color: 'Белый',
+    status: 'sold', dealerId: 'dealer-1', createdAt: '2025-08-12T14:00:00Z',
+  },
+  // Toyota — 3 авто
   {
     id: 'v-003', vin: 'JTDKN3DU5A0123456', brand: 'Toyota', model: 'Camry',
     year: 2024, price: 3_500_000, mileage: 12_000, color: 'Чёрный',
     status: 'reserved', dealerId: 'dealer-1', createdAt: '2025-11-20T14:30:00Z',
   },
   {
-    id: 'v-004', vin: 'XWEPH81ABP0012345', brand: 'Hyundai', model: 'Tucson',
-    year: 2025, price: 3_200_000, mileage: 0, color: 'Синий',
-    status: 'in_stock', dealerId: 'dealer-2', createdAt: '2026-03-01T08:00:00Z',
+    id: 'v-011', vin: 'JTEBR3FJ5MK234567', brand: 'Toyota', model: 'RAV4',
+    year: 2025, price: 3_900_000, mileage: 0, color: 'Белый',
+    status: 'in_stock', dealerId: 'dealer-2', createdAt: '2026-02-18T11:00:00Z',
   },
   {
-    id: 'v-005', vin: 'WMEEJ9AA1E0123456', brand: 'Mercedes-Benz', model: 'E-Class',
-    year: 2023, price: 5_900_000, mileage: 25_000, color: 'Серый',
-    status: 'sold', dealerId: 'dealer-1', createdAt: '2025-06-10T11:00:00Z',
+    id: 'v-012', vin: 'JTDKARFU1M3345678', brand: 'Toyota', model: 'Land Cruiser',
+    year: 2024, price: 8_500_000, mileage: 5_000, color: 'Серебристый',
+    status: 'reserved', dealerId: 'dealer-1', createdAt: '2025-10-01T10:00:00Z',
   },
+  // Kia — 2 авто
   {
     id: 'v-006', vin: 'KNAGH41E59A123456', brand: 'Kia', model: 'Sportage',
     year: 2025, price: 2_900_000, mileage: 0, color: 'Красный',
     status: 'in_stock', dealerId: 'dealer-2', createdAt: '2026-03-10T10:00:00Z',
   },
   {
+    id: 'v-013', vin: 'KNAPH81B8M5456789', brand: 'Kia', model: 'K5',
+    year: 2025, price: 2_700_000, mileage: 0, color: 'Серый',
+    status: 'in_stock', dealerId: 'dealer-2', createdAt: '2026-03-15T08:00:00Z',
+  },
+  // Hyundai — 2 авто
+  {
+    id: 'v-004', vin: 'XWEPH81ABP0012345', brand: 'Hyundai', model: 'Tucson',
+    year: 2025, price: 3_200_000, mileage: 0, color: 'Синий',
+    status: 'in_stock', dealerId: 'dealer-2', createdAt: '2026-03-01T08:00:00Z',
+  },
+  {
+    id: 'v-014', vin: 'XWEGN41C9P0567890', brand: 'Hyundai', model: 'Santa Fe',
+    year: 2024, price: 4_100_000, mileage: 15_000, color: 'Белый',
+    status: 'sold', dealerId: 'dealer-1', createdAt: '2025-07-22T13:00:00Z',
+  },
+  // Volkswagen — 1
+  {
+    id: 'v-002', vin: 'WVWZZZ3CZWE123456', brand: 'Volkswagen', model: 'Tiguan',
+    year: 2025, price: 3_800_000, mileage: 0, color: 'Белый',
+    status: 'in_stock', dealerId: 'dealer-1', createdAt: '2026-02-01T09:00:00Z',
+  },
+  // Mercedes-Benz — 2 авто
+  {
+    id: 'v-005', vin: 'WMEEJ9AA1E0123456', brand: 'Mercedes-Benz', model: 'E-Class',
+    year: 2023, price: 5_900_000, mileage: 25_000, color: 'Серый',
+    status: 'sold', dealerId: 'dealer-1', createdAt: '2025-06-10T11:00:00Z',
+  },
+  {
+    id: 'v-015', vin: 'WDD2050421R678901', brand: 'Mercedes-Benz', model: 'C-Class',
+    year: 2025, price: 5_200_000, mileage: 0, color: 'Чёрный',
+    status: 'in_stock', dealerId: 'dealer-1', createdAt: '2026-03-12T09:00:00Z',
+  },
+  // Audi — 1
+  {
     id: 'v-007', vin: 'WAUZZZ4G9FN123456', brand: 'Audi', model: 'A4',
     year: 2024, price: 4_500_000, mileage: 8_000, color: 'Белый',
     status: 'in_stock', dealerId: 'dealer-1', createdAt: '2025-12-05T15:00:00Z',
   },
+  // Nissan — 1
   {
     id: 'v-008', vin: 'SJNFAAE11U2123456', brand: 'Nissan', model: 'X-Trail',
     year: 2025, price: 3_100_000, mileage: 0, color: 'Зелёный',
     status: 'reserved', dealerId: 'dealer-2', createdAt: '2026-02-20T12:00:00Z',
+  },
+  // Skoda — 2 авто
+  {
+    id: 'v-016', vin: 'TMBJG9NE1R0123456', brand: 'Skoda', model: 'Octavia',
+    year: 2025, price: 2_800_000, mileage: 0, color: 'Серый',
+    status: 'in_stock', dealerId: 'dealer-2', createdAt: '2026-03-18T10:00:00Z',
+  },
+  {
+    id: 'v-017', vin: 'TMBLE7NE3R0234567', brand: 'Skoda', model: 'Kodiaq',
+    year: 2024, price: 3_600_000, mileage: 7_000, color: 'Белый',
+    status: 'in_stock', dealerId: 'dealer-2', createdAt: '2025-11-28T12:00:00Z',
   },
 ];
 
@@ -80,6 +134,35 @@ let orders: Order[] = [
     customerPhone: '+7 (916) 987-65-43', totalPrice: 3_100_000,
     status: 'pending', dealerId: 'dealer-2',
     createdAt: '2026-03-25T16:00:00Z', updatedAt: '2026-03-25T16:00:00Z',
+  },
+  {
+    id: 'o-004', vehicleId: 'v-010', customerName: 'Елена Соколова',
+    customerPhone: '+7 (903) 456-78-90', totalPrice: 4_900_000,
+    status: 'completed', dealerId: 'dealer-1', managerId: 'user-1',
+    createdAt: '2026-01-10T10:00:00Z', updatedAt: '2026-01-25T15:00:00Z',
+  },
+  {
+    id: 'o-005', vehicleId: 'v-014', customerName: 'Сергей Новиков',
+    totalPrice: 4_100_000, status: 'completed', dealerId: 'dealer-1',
+    managerId: 'user-1',
+    createdAt: '2025-12-20T09:00:00Z', updatedAt: '2026-01-05T12:00:00Z',
+  },
+  {
+    id: 'o-006', vehicleId: 'v-012', customerName: 'Ольга Морозова',
+    customerPhone: '+7 (926) 333-22-11', totalPrice: 8_500_000,
+    status: 'confirmed', dealerId: 'dealer-1', managerId: 'user-1',
+    createdAt: '2026-03-22T11:00:00Z', updatedAt: '2026-03-23T09:00:00Z',
+  },
+  {
+    id: 'o-007', vehicleId: 'v-011', customerName: 'Андрей Лебедев',
+    customerPhone: '+7 (985) 777-88-99', totalPrice: 3_900_000,
+    status: 'pending', dealerId: 'dealer-2',
+    createdAt: '2026-03-26T15:00:00Z', updatedAt: '2026-03-26T15:00:00Z',
+  },
+  {
+    id: 'o-008', vehicleId: 'v-009', customerName: 'Наталья Кузнецова',
+    totalPrice: 7_800_000, status: 'pending', dealerId: 'dealer-1',
+    createdAt: '2026-03-27T10:00:00Z', updatedAt: '2026-03-27T10:00:00Z',
   },
 ];
 
