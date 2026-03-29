@@ -59,6 +59,22 @@ Shell и contracts не зависят от фреймворков. Модули
 - **Delphi adapter** — нормализация UPPER_CASE → camelCase
 - **Агрегация** — дашборд собирает данные из нескольких адаптеров
 
+## Интеграция с host-приложением (WebView Bridge)
+
+Shell живёт внутри WebView desktop-приложения (Delphi, Electron). Два канала:
+
+| Канал | Назначение |
+|-------|-----------|
+| **API / BFF** | данные — HTTP через Gateway |
+| **Bridge** | платформа — `postMessage` (контекст, lifecycle, native) |
+
+Правило: данные — через API, платформенные вещи — через bridge.
+
+**Host → Web:** начальный контекст, refresh, lifecycle (show/hide/close)
+**Web → Host:** открыть legacy-форму, print/file dialog, платформенная навигация
+
+Формат: `{ type, requestId, action, payload }` — `requestId` для request/response, события без него.
+
 ## Deploy
 
 ```
